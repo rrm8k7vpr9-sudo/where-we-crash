@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Where We Crash</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+html,body{margin:0}[hidden]{display:none!important}img{max-width:100%}
+/* Layout: ruhige Produktseite. Glas-Navigationsleiste, großer Hero, darunter ein luftiges Kartenraster. */
+:root{
+  --bg:#F5F5F7; --card:#FFFFFF; --ink:#1D1D1F; --sub:#6E6E73; --faint:#86868B; --hair:#D2D2D7;
+  --fill:#E8E8ED; --accent:#0071E3; --accent-ink:#FFFFFF; --accent-soft:#E8F1FC;
+  --warn:#BF4800; --nav:rgba(245,245,247,.72);
+  --f:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", Arial, sans-serif;
+  --fd:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.05);
+  --shadow-h:0 2px 4px rgba(0,0,0,.05), 0 18px 40px rgba(0,0,0,.09);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#000000; --card:#1C1C1E; --ink:#F5F5F7; --sub:#A1A1A6; --faint:#8E8E93; --hair:#38383A;
+  --fill:#2C2C2E; --accent:#2997FF; --accent-ink:#FFFFFF; --accent-soft:#0F2A47;
+  --warn:#FF9F45; --nav:rgba(0,0,0,.66);
+  --shadow:0 0 0 1px rgba(255,255,255,.06); --shadow-h:0 0 0 1px rgba(255,255,255,.12); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#000000; --card:#1C1C1E; --ink:#F5F5F7; --sub:#A1A1A6; --faint:#8E8E93; --hair:#38383A;
+  --fill:#2C2C2E; --accent:#2997FF; --accent-ink:#FFFFFF; --accent-soft:#0F2A47;
+  --warn:#FF9F45; --nav:rgba(0,0,0,.66);
+  --shadow:0 0 0 1px rgba(255,255,255,.06); --shadow-h:0 0 0 1px rgba(255,255,255,.12); color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:17px;line-height:1.47;letter-spacing:-.022em;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
+button,input,select,textarea{font:inherit;color:inherit;letter-spacing:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* Navigation */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--nav);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid color-mix(in srgb,var(--hair) 60%,transparent)}
+.nav .wrap{height:52px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:600;font-size:17px;letter-spacing:-.02em;white-space:nowrap}
+.spacer{flex:1}
+.mebtn{display:inline-flex;align-items:center;gap:8px;height:34px;border:0;border-radius:999px;background:var(--fill);color:var(--ink);padding:0 14px;font-size:14px;font-weight:500;cursor:pointer;max-width:180px;min-width:0}
+.mebtn:has(.face){padding:0 12px 0 3px}
+.mebtn .face{margin:0;border:0;width:28px;height:28px}
+.mebtn .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field input.pin{font-size:22px;letter-spacing:.5em;text-align:center;font-variant-numeric:tabular-nums}
+.name{display:flex;align-items:center;gap:8px;background:var(--fill);border-radius:999px;padding:0 4px 0 12px;height:34px;min-width:0}
+.name label{font-size:13px;color:var(--sub);white-space:nowrap}
+.name input{border:0;background:transparent;outline:none;font-size:14px;width:130px;min-width:0;height:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;height:34px;padding:0 16px;font-size:14px;font-weight:500;cursor:pointer;background:var(--accent);color:var(--accent-ink);white-space:nowrap;transition:filter .2s, transform .2s}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.97)}
+.btn.secondary{background:var(--fill);color:var(--ink)}
+.btn.lg{height:44px;padding:0 22px;font-size:17px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Hero */
+.hero{padding-block:72px 40px;text-align:center}
+.eyebrow{font-size:17px;font-weight:600;color:var(--warn);margin:0 0 6px;letter-spacing:-.01em}
+h1{font-family:var(--fd);font-size:clamp(40px,7vw,72px);line-height:1.05;font-weight:700;letter-spacing:-.035em;margin:0 auto;max-width:14ch;text-wrap:balance}
+.lede{font-size:clamp(19px,2.2vw,22px);color:var(--sub);max-width:34ch;margin:18px auto 0;text-wrap:balance;letter-spacing:-.02em}
+.hero .cta{margin-top:30px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin:56px auto 0;max-width:720px}
+.stat{padding:0 12px;display:grid;gap:2px;justify-items:center}
+.stat+.stat{border-left:1px solid var(--hair)}
+.stat b{font-family:var(--fd);font-size:clamp(30px,4.6vw,44px);font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat small{font-size:14px;color:var(--sub);letter-spacing:-.01em}
+.meter{height:4px;width:72px;background:var(--fill);border-radius:2px;overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;transition:width .6s cubic-bezier(.2,.7,.2,1)}
+
+/* Ablauf */
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;background:var(--card);border-radius:22px;padding:28px 32px;box-shadow:var(--shadow);margin-bottom:56px}
+.how div{min-width:0}
+.how .n{font-size:13px;font-weight:600;color:var(--faint);font-variant-numeric:tabular-nums}
+.how h3{font-size:19px;font-weight:600;margin:4px 0 4px;letter-spacing:-.02em}
+.how p{margin:0;font-size:15px;color:var(--sub);letter-spacing:-.01em}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;margin-top:22px;font-size:14px;color:var(--sub)}
+.facts span::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--faint);margin-right:8px;vertical-align:middle}
+
+/* Abschnitt */
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+h2{font-family:var(--fd);font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.03em;margin:0;line-height:1.1}
+.seg{display:inline-flex;background:var(--fill);border-radius:10px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:8px;height:30px;padding:0 14px;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin:0 -2px 20px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;height:34px;padding:0 15px;font-size:14px;cursor:pointer;color:var(--ink)}
+.chip small{color:var(--faint);margin-left:5px;font-variant-numeric:tabular-nums;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);box-shadow:none}
+.chip[aria-pressed="true"] small{color:inherit;opacity:.6}
+.notice{background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:14px 18px;font-size:15px;margin-bottom:20px;color:var(--ink)}
+.notice::before{content:"Hinweis";display:block;font-size:12px;font-weight:600;color:var(--warn);margin-bottom:2px;letter-spacing:0}
+
+/* Karten */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;padding-bottom:40px}
+.card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:24px 24px 20px;display:flex;flex-direction:column;gap:16px;min-width:0;transition:box-shadow .3s, transform .3s}
+.card:hover{box-shadow:var(--shadow-h);transform:translateY(-2px)}
+.thumb{display:block;aspect-ratio:2/1;max-width:100%;border-radius:14px;overflow:hidden;background:var(--fill);margin:-4px -4px 0;position:relative}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.card:hover .thumb img{transform:scale(1.03)}
+.thumb.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--faint);font-size:13px;font-weight:500;padding:12px;text-align:center}
+.addimg{border:0;background:var(--card);color:var(--accent);border-radius:999px;height:30px;padding:0 14px;font-size:13px;font-weight:500;cursor:pointer}
+.imgform{display:flex;gap:6px;width:100%;max-width:340px}
+.imgform input{flex:1;min-width:0;height:32px;border-radius:999px;border:1px solid var(--hair);background:var(--card);padding:0 12px;font-size:13px}
+.imgform button{height:32px;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);padding:0 12px;font-size:13px;font-weight:500;cursor:pointer}
+.thumb.ph small{font-size:11px;color:var(--faint);font-weight:400}
+.c-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--faint);letter-spacing:-.005em}
+.badge{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:3px 10px}
+.c-title{font-family:var(--fd);font-size:22px;line-height:1.18;font-weight:600;letter-spacing:-.025em;margin:0;overflow-wrap:anywhere}
+.c-place{font-size:15px;color:var(--sub);margin-top:4px}
+.price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.price b{font-family:var(--fd);font-size:34px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}
+.price span{font-size:14px;color:var(--sub)}
+.specs{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums}
+.specs .bad{color:var(--warn)}
+.note{margin:0;font-size:15px;color:var(--ink);overflow-wrap:anywhere;line-height:1.45}
+.link{font-size:15px;color:var(--accent);text-decoration:none;font-weight:500;align-self:flex-start}
+.link:hover{text-decoration:underline}
+.c-foot{margin-top:auto;padding-top:16px;border-top:1px solid var(--hair);display:flex;align-items:center;gap:12px;min-width:0}
+.vote{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 16px 0 13px;border-radius:999px;border:0;background:var(--fill);cursor:pointer;font-size:15px;font-weight:600;color:var(--ink);transition:background .2s, transform .15s}
+.vote svg{width:17px;height:17px}
+.vote:active{transform:scale(.95)}
+.vote[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.vote .n{font-variant-numeric:tabular-nums}
+.vote:disabled{opacity:.5;cursor:not-allowed}
+.faces{display:flex;align-items:center;min-width:0;flex:1}
+.face{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:600;color:#fff;border:2px solid var(--card);margin-left:-8px;flex:none;letter-spacing:0}
+.face:first-child{margin-left:0}
+.face.more{background:var(--fill);color:var(--sub)}
+.faces .none{font-size:13px;color:var(--faint)}
+.by{font-size:12px;color:var(--faint);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.del{background:none;border:0;color:var(--faint);font-size:12px;cursor:pointer;padding:0}
+.del:hover{color:var(--ink)}
+.del.armed{color:var(--warn);font-weight:600}
+
+.empty{grid-column:1/-1;background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:64px 24px;text-align:center}
+.empty h3{font-family:var(--fd);font-size:24px;font-weight:600;letter-spacing:-.025em;margin:0 0 6px}
+.empty p{color:var(--sub);margin:0 auto 22px;max-width:36ch}
+footer{border-top:1px solid var(--hair);padding-block:18px 40px;font-size:12px;color:var(--faint);letter-spacing:-.005em}
+
+/* Sheet */
+dialog{border:0;border-radius:24px;padding:0;background:var(--card);color:var(--ink);width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px);box-shadow:0 30px 80px rgba(0,0,0,.25)}
+dialog::backdrop{background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.form{padding:28px;display:grid;gap:14px}
+.form h3{font-family:var(--fd);font-size:26px;font-weight:700;letter-spacing:-.03em;margin:0}
+.form .hint{margin:-8px 0 4px;font-size:15px;color:var(--sub)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:grid;gap:6px;min-width:0}
+.field label{font-size:13px;font-weight:500;color:var(--sub)}
+.field input,.field select,.field textarea{background:var(--fill);border:1px solid transparent;border-radius:12px;height:44px;padding:0 14px;width:100%;font-size:16px;outline:none;transition:border-color .2s, background .2s}
+.field textarea{height:auto;min-height:80px;padding:12px 14px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:var(--card)}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.fhint{font-size:12px;color:var(--faint)}
+.err{color:var(--warn);font-size:14px;margin:0}
+
+@media (max-width:720px){
+  .hero{padding-block:44px 28px}
+  .how{grid-template-columns:1fr;padding:22px}
+  .row{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
+  .brand{display:none}
+  .nav .spacer{display:none}
+  .btn.add .t{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <span class="brand">Where We Crash</span>
+    <span class="spacer"></span>
+    <button class="mebtn" id="mebtn" type="button"><span>Anmelden</span></button>
+    <button class="btn add" id="addbtn" type="button" aria-label="Unterkunft hinzufügen">+<span class="t"> Hinzufügen</span></button>
+  </div>
+</nav>
+
+<main>
+  <section class="hero wrap">
+    <p class="eyebrow">Gruppenurlaub</p>
+    <h1>Where We Crash.</h1>
+    <p class="lede">Unterkünfte vorschlagen, Favoriten markieren.</p>
+    <div class="cta"><button class="btn lg" id="addbtn2" type="button">Unterkunft vorschlagen</button></div>
+    <div class="stats">
+      <div class="stat"><b id="s-ideas">0</b><small>Unterkünfte</small></div>
+      <div class="stat"><b id="s-votes">0</b><small>Stimmen</small></div>
+      <div class="stat"><b id="s-people">0</b><small>Leute dabei</small></div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="how" aria-label="So funktioniert's">
+      <div><span class="n">Schritt 1</span><h3>Einmal anmelden</h3><p>Oben rechts mit Namen und einer 4-stelligen PIN. Danach erkennt dich dein Gerät automatisch.</p></div>
+      <div><span class="n">Schritt 2</span><h3>Unterkunft vorschlagen</h3><p>Link von Airbnb, Booking & Co. einfügen, Preis und Betten ergänzen.</p></div>
+      <div><span class="n">Schritt 3</span><h3>Favoriten markieren</h3><p>Gib allen Vorschlägen eine Stimme, die dir gefallen. Die meisten Stimmen gewinnen.</p></div>
+    </section>
+
+    <div id="notice" class="notice" hidden></div>
+    <div class="sec-head">
+      <h2>Vorschläge</h2>
+      <div class="seg" id="seg" role="group" aria-label="Sortierung">
+        <button type="button" data-s="votes">Beliebt</button>
+        <button type="button" data-s="cheap">Preis</button>
+        <button type="button" data-s="new">Neu</button>
+      </div>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Nach Land filtern"></div>
+    <section class="grid" id="grid" aria-live="polite">
+      <div class="empty"><h3>Vorschläge werden geladen</h3><p>Gleich siehst du alles, was die Crew bisher gefunden hat.</p></div>
+    </section>
+  </div>
+</main>
+
+
+<dialog id="dlg">
+  <form class="form" id="form" novalidate>
+    <h3>Unterkunft vorschlagen</h3>
+    <p class="hint">Link einfügen und die wichtigsten Eckdaten ergänzen.</p>
+    <div class="field"><label for="i-url">Link</label><input id="i-url" type="url" placeholder="https://www.airbnb.de/rooms/…" required></div>
+    <div class="field"><label for="i-title">Name</label><input id="i-title" maxlength="80" placeholder="Finca mit Pool bei Valencia" required></div>
+    <div class="row">
+      <div class="field"><label for="i-place">Ort oder Region</label><input id="i-place" maxlength="60" placeholder="Costa Blanca"></div>
+      <div class="field"><label for="i-country">Land</label><select id="i-country" required></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="i-price">Preis pro Nacht gesamt, €</label><input id="i-price" type="number" min="0" step="1" inputmode="numeric" placeholder="900"></div>
+      <div class="field"><label for="i-beds">Schlafplätze (Personen)</label><input id="i-beds" type="number" min="1" step="1" inputmode="numeric" placeholder="20"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label for="i-bedcount">Betten</label><input id="i-bedcount" type="number" min="1" step="1" inputmode="numeric" placeholder="14"></div>
+      <div class="field"><label for="i-travel">Anreise</label><select id="i-travel"><option>Flug</option><option>Auto</option><option>Zug</option><option>Gemischt</option></select></div>
+    </div>
+    <div class="field"><label for="i-note">Warum diese Unterkunft?</label><textarea id="i-note" maxlength="280" placeholder="Pool, Strand in 5 Minuten, großer Grillplatz"></textarea></div>
+    <div class="field"><label for="i-image">Bild-Link (optional)</label><input id="i-image" type="url" placeholder="Wird automatisch geholt"><span class="fhint">Nur nötig, falls kein Bild erscheint: Rechtsklick aufs Foto, „Bildadresse kopieren“.</span></div>
+    <p class="err" id="ferr" hidden></p>
+    <div class="actions"><button type="button" class="btn secondary lg" id="cancel">Abbrechen</button><button class="btn lg" id="save" type="submit">Vorschlagen</button></div>
+  </form>
+</dialog>
+
+<dialog id="ldlg">
+  <form class="form" id="lform" novalidate>
+    <h3>Wer bist du?</h3>
+    <p class="hint" id="l-hint">Einmal anmelden, danach erkennt dich dieses Gerät automatisch.</p>
+    <div class="field"><label for="l-name">Name</label><input id="l-name" maxlength="30" placeholder="Dein Vorname" autocomplete="off" list="names" required><datalist id="names"></datalist></div>
+    <div class="field"><label for="l-pin" id="l-pinlabel">PIN</label><input id="l-pin" class="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" required></div>
+    <p class="err" id="lerr" hidden></p>
+    <div class="actions"><button type="button" class="btn secondary lg" id="l-cancel">Abbrechen</button><button class="btn lg" id="l-go" type="submit">Anmelden</button></div>
+  </form>
+</dialog>
+
+<dialog id="adlg">
+  <div class="form">
+    <h3 id="acc-name"></h3>
+    <p class="hint">Du bist auf diesem Gerät angemeldet.</p>
+    <div class="actions"><button type="button" class="btn secondary lg" id="a-logout">Abmelden</button><button type="button" class="btn lg" id="a-close">Fertig</button></div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  // ▼ Hier steht die Adresse deines Google-Scripts (endet auf /exec)
+  const API="https://script.google.com/macros/s/AKfycbyhYhBHytWioEKvxnOatDRHxQv3PtdwBT9vYhdsQxmRZa_74ryiIQU_1oGrYLoX-GxKmg/exec";
+
+  const COUNTRIES=["Spanien","Portugal","Italien","Frankreich","Kroatien","Griechenland","Montenegro","Albanien","Türkei","Niederlande","Deutschland","Österreich","Marokko","Anderes"];
+  const HEART='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.4 2.5h1.8c.8-1.4 2.3-2.5 4.4-2.5 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+  const FACE=["#0071E3","#34C759","#FF9500","#AF52DE","#FF2D55","#5AC8FA","#FFCC00","#5856D6","#00C7BE","#FF3B30"];
+  const $=id=>document.getElementById(id);
+  const LS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+  const LSset=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}};
+  const norm=s=>String(s||"").trim().toLowerCase().replace(/\s+/g," ").slice(0,30);
+
+  async function call(fn,...args){
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({fn,args})});
+    const j=await r.json();
+    if(!j.ok){const e=new Error(j.error||"Fehler");e.code=j.code;throw e;}
+    return j.data;
+  }
+
+  // Angemeldet bleiben: Name + Geheimcode liegen auf diesem Gerät
+  let session=null;
+  try{session=JSON.parse(LS("wwc-session")||"null");}catch(e){}
+  const me=()=>session?norm(session.name):"";
+
+  let ideas=[], votes={}, people=[], filter="Alle", armedDel=null, sort=LS("wwc-sort")||"votes", loaded=false, pending=0, afterLogin=null;
+
+  $("i-country").innerHTML=COUNTRIES.map(c=>`<option>${c}</option>`).join("");
+
+  function el(tag,attrs,...kids){const n=document.createElement(tag);for(const k in (attrs||{})){if(k==="class")n.className=attrs[k];else if(k==="html")n.innerHTML=attrs[k];else n.setAttribute(k,attrs[k]);}for(const c of kids){if(c==null)continue;n.append(c.nodeType?c:document.createTextNode(String(c)));}return n;}
+  function platform(u){try{const h=new URL(u).hostname.replace(/^www\./,"");if(h.includes("airbnb"))return"Airbnb";if(h.includes("booking"))return"Booking.com";if(h.includes("vrbo"))return"Vrbo";if(h.includes("fewo-direkt"))return"FeWo-direkt";if(h.includes("hometogo"))return"HomeToGo";if(h.includes("holidu"))return"Holidu";return h;}catch(e){return"Link"}}
+  function safeUrl(u){try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:null}catch(e){return null}}
+  const eur=n=>new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(n);
+  function hash(s){let h=0;for(const ch of s)h=(h*31+ch.charCodeAt(0))|0;return Math.abs(h);}
+  function initials(n){const p=String(n).trim().split(/\s+/);return ((p[0]||"?")[0]+(p[1]?p[1][0]:"")).toUpperCase();}
+  function notice(t){const n=$("notice");n.textContent=t;n.hidden=!t;}
+  function apply(s){if(!s)return;ideas=s.ideas||[];votes=s.votes||{};people=s.people||[];loaded=true;render();}
+
+  function tally(){const c={},who={};for(const [id,v] of Object.entries(votes)){for(const i of (v.likes||[])){c[i]=(c[i]||0)+1;(who[i]=who[i]||[]).push({id,name:v.name||"Jemand"});}}return {c,who};}
+
+  function renderMe(){
+    const b=$("mebtn");b.replaceChildren();
+    if(session){
+      const a=el("span",{class:"face"},initials(session.name));a.style.background=FACE[hash(me())%FACE.length];
+      b.append(a,el("span",{class:"t"},session.name));b.setAttribute("aria-label","Angemeldet als "+session.name+". Abmelden");
+    }else{b.append(el("span",null,"Anmelden"));b.setAttribute("aria-label","Anmelden");}
+  }
+
+  function render(){
+    renderMe();
+    const {c,who}=tally();
+    const mine=(votes[me()]&&votes[me()].likes)||[];
+    const total=Object.values(c).reduce((a,b)=>a+b,0);
+    $("s-ideas").textContent=ideas.length; $("s-votes").textContent=total;
+    const all=new Set(people.map(norm));Object.keys(votes).forEach(k=>all.add(k));all.delete("");
+    $("s-people").textContent=all.size;
+    $("names").replaceChildren(...people.map(n=>el("option",{value:n})));
+    document.querySelectorAll("#seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s===sort)));
+
+    const counts={};ideas.forEach(i=>counts[i.country]=(counts[i.country]||0)+1);
+    if(filter!=="Alle"&&!counts[filter])filter="Alle";
+    const chipBox=$("chips");chipBox.replaceChildren();
+    ["Alle",...COUNTRIES.filter(k=>counts[k])].forEach(k=>{const b=el("button",{class:"chip",type:"button","aria-pressed":String(filter===k)},k,el("small",null,k==="Alle"?ideas.length:counts[k]));b.onclick=()=>{filter=k;render();};chipBox.append(b);});
+    chipBox.hidden=ideas.length===0;
+
+    const ranked=[...ideas].sort((a,b)=>(c[b.id]||0)-(c[a.id]||0)||(b.createdAt||0)-(a.createdAt||0));
+    const topVotes=ranked.length?(c[ranked[0].id]||0):0;
+    let list=ideas.filter(i=>filter==="Alle"||i.country===filter);
+    if(sort==="votes")list=ranked.filter(i=>list.includes(i));
+    else if(sort==="new")list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    else{const pk=i=>i.price>0?(i.beds>0?i.price/i.beds:i.price):1e12;list.sort((a,b)=>pk(a)-pk(b));}
+
+    const grid=$("grid");grid.replaceChildren();
+    if(!loaded){grid.append(el("div",{class:"empty"},el("h3",null,"Vorschläge werden geladen"),el("p",null,"Gleich siehst du alles, was bisher gefunden wurde.")));return;}
+    if(!list.length){
+      const b=el("button",{class:"btn lg",type:"button"},"Ersten Vorschlag machen");b.onclick=openForm;
+      grid.append(el("div",{class:"empty"},el("h3",null,"Noch keine Vorschläge"),el("p",null,"Füge den ersten Link von Airbnb oder Booking.com ein. Die anderen sehen ihn nach wenigen Sekunden."),b));return;}
+    for(const i of list){
+      const n=c[i.id]||0, on=mine.includes(i.id), lead=topVotes>0&&n===topVotes;
+      const url=safeUrl(i.url);
+      const card=el("article",{class:"card"});
+      const meta=el("div",{class:"c-meta"},el("span",null,platform(i.url)+" · "+i.country));
+      if(lead)meta.append(el("span",{class:"badge"},"Favorit"));
+      const head=el("div",null,el("h3",{class:"c-title"},i.title),i.place?el("div",{class:"c-place"},i.place):null);
+      const pp=i.price>0&&i.beds>0;
+      const price=i.price>0?el("div",{class:"price"},el("b",null,eur(pp?i.price/i.beds:i.price)),el("span",null,pp?"pro Person / Nacht":"pro Nacht gesamt")):el("div",{class:"price"},el("span",null,"Preis noch offen"));
+      const specs=el("div",{class:"specs"});
+      if(pp)specs.append(el("span",null,eur(i.price)+" pro Nacht gesamt"));
+      if(i.beds>0)specs.append(el("span",null,i.beds+" Schlafplätze"));
+      if(i.bedCount>0)specs.append(el("span",null,i.bedCount+(i.bedCount===1?" Bett":" Betten")));
+      if(i.travel)specs.append(el("span",null,"Anreise: "+i.travel));
+      const img=safeUrl(i.image);
+      const thumb=el(url&&img?"a":"div",url&&img?{class:"thumb",href:url,target:"_blank",rel:"noopener noreferrer","aria-label":i.title+" ansehen"}:{class:"thumb"});
+      const ph=()=>{
+        const t=el("div",{class:"thumb ph"});
+        const b=el("button",{class:"addimg",type:"button"},"Bild hinzufügen");
+        b.onclick=()=>{
+          if(needLogin())return;
+          const inp=el("input",{type:"url",placeholder:"Bildadresse einfügen","aria-label":"Bildadresse"});
+          const ok=el("button",{type:"button"},"Speichern");
+          const f=el("div",{class:"imgform"},inp,ok);
+          ok.onclick=()=>{const u=safeUrl(inp.value.trim());if(!u){inp.focus();return;}
+            ideas=ideas.map(x=>x.id===i.id?{...x,image:u}:x);render();write("setImage",i.id,u);};
+          t.replaceChildren(f,el("small",null,"Auf der Buchungsseite: Rechtsklick aufs Foto, „Bildadresse kopieren“"));inp.focus();
+        };
+        t.append(el("span",null,platform(i.url)),b);
+        thumb.replaceWith(t);
+      };
+      if(img){const im=el("img",{src:img,alt:"",loading:"lazy",referrerpolicy:"no-referrer"});im.onerror=ph;thumb.append(im);}
+      card.append(thumb,meta,head,price,specs);
+      if(!img)ph();
+      if(i.note)card.append(el("p",{class:"note"},i.note));
+      if(url)card.append(el("a",{class:"link",href:url,target:"_blank",rel:"noopener noreferrer"},"Auf "+platform(i.url)+" ansehen ›"));
+      const by=el("div",{class:"by"},el("span",null,"Vorgeschlagen von "+(i.byName||"Jemand")));
+      if(me()&&(norm(i.by)===me()||norm(i.byName)===me())){
+        const d=el("button",{class:"del"+(armedDel===i.id?" armed":""),type:"button"},armedDel===i.id?"Wirklich löschen?":"Löschen");
+        d.onclick=()=>{if(armedDel!==i.id){armedDel=i.id;render();return;}armedDel=null;ideas=ideas.filter(x=>x.id!==i.id);render();write("deleteIdea",i.id);};
+        by.append(el("span",null,"·"),d);
+      }
+      card.append(by);
+      const vb=el("button",{class:"vote",type:"button","aria-pressed":String(on),"aria-label":(on?"Stimme zurücknehmen":"Stimme geben")+": "+i.title,html:HEART},el("span",{class:"n"},n));
+      vb.onclick=()=>toggle(i.id);
+      const faces=el("div",{class:"faces"});
+      const ppl=who[i.id]||[];
+      if(!ppl.length)faces.append(el("span",{class:"none"},"Noch keine Stimmen"));
+      ppl.slice(0,6).forEach(p=>{const f=el("span",{class:"face",title:p.name},initials(p.name));f.style.background=FACE[hash(p.id)%FACE.length];faces.append(f);});
+      if(ppl.length>6)faces.append(el("span",{class:"face more",title:ppl.slice(6).map(p=>p.name).join(", ")},"+"+(ppl.length-6)));
+      if(ppl.length)faces.setAttribute("title",ppl.map(p=>p.name).join(", "));
+      card.append(el("div",{class:"c-foot"},vb,faces));
+      grid.append(card);
+    }
+  }
+
+  // Schreibvorgänge nacheinander; jede Antwort bringt den aktuellen Stand mit
+  let chain=Promise.resolve();
+  function write(fn,...args){
+    pending++;
+    const s=session;
+    const p=chain.then(()=>call(fn,s.name,s.secret,...args)).then(st=>{pending--;if(!pending)apply(st);return st;},e=>{
+      pending--;
+      if(e.code==="auth"){logout();notice("Bitte melde dich neu an.");openLogin();}
+      else notice("Speichern hat nicht geklappt. Prüf deine Verbindung und versuch es noch einmal.");
+      refresh(true);throw e;});
+    chain=p.catch(()=>{});
+    return p;
+  }
+  function refresh(force){if(!force&&(pending||document.hidden||document.querySelector(".imgform")||$("dlg").open))return;call("getState").then(s=>{if(!pending)apply(s);}).catch(()=>{});}
+  setInterval(refresh,8000);
+  document.addEventListener("visibilitychange",()=>refresh());
+
+  function toggle(id){
+    if(needLogin(()=>toggle(id)))return; notice("");
+    const cur=(votes[me()]&&votes[me()].likes)||[];
+    const likes=cur.includes(id)?cur.filter(x=>x!==id):[...cur,id];
+    votes[me()]={name:session.name,likes};render();
+    write("saveVote",likes);
+  }
+  document.querySelectorAll("#seg button").forEach(b=>b.onclick=()=>{sort=b.dataset.s;LSset("wwc-sort",sort);render();});
+
+  // Anmeldung
+  const ldlg=$("ldlg");
+  function needLogin(next){if(session)return false;openLogin(next);return true;}
+  function loginMode(){
+    const known=people.some(p=>norm(p)===norm($("l-name").value));
+    const nm=$("l-name").value.trim();
+    $("l-hint").textContent=!nm?"Einmal anmelden, danach erkennt dich dieses Gerät automatisch.":known?"Willkommen zurück. Gib deine PIN ein.":"Neu hier? Wähle eine 4-stellige PIN und merk sie dir. Du brauchst sie nur auf neuen Geräten.";
+    $("l-pinlabel").textContent=known?"PIN":"Neue PIN (4 Ziffern)";
+    $("l-go").textContent=known?"Anmelden":"Loslegen";
+  }
+  function openLogin(next){afterLogin=next||null;$("lform").reset();$("lerr").hidden=true;loginMode();ldlg.showModal();$("l-name").focus();}
+  function logout(){session=null;LSset("wwc-session",null);render();}
+  $("l-name").addEventListener("input",loginMode);
+  $("l-pin").addEventListener("input",()=>{$("l-pin").value=$("l-pin").value.replace(/\D/g,"").slice(0,4);});
+  $("l-cancel").onclick=()=>ldlg.close();
+  $("lform").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const name=$("l-name").value.trim(), pin=$("l-pin").value, err=$("lerr");
+    if(!name){err.textContent="Gib deinen Namen ein.";err.hidden=false;return;}
+    if(!/^\d{4}$/.test(pin)){err.textContent="Die PIN muss aus 4 Ziffern bestehen.";err.hidden=false;return;}
+    $("l-go").disabled=true;
+    try{
+      const r=await call("login",name,pin);
+      session={name:r.name,secret:r.secret};LSset("wwc-session",JSON.stringify(session));
+      if(r.created)people=[...people,r.name];
+      ldlg.close();notice("");render();
+      const n=afterLogin;afterLogin=null;if(n)n();
+    }catch(ex){err.textContent=ex.code?ex.message:"Keine Verbindung. Versuch es noch einmal.";err.hidden=false;}
+    finally{$("l-go").disabled=false;}
+  });
+  $("mebtn").onclick=()=>{
+    if(!session){openLogin();return;}
+    $("acc-name").textContent=session.name;$("adlg").showModal();
+  };
+  $("a-close").onclick=()=>$("adlg").close();
+  $("a-logout").onclick=()=>{$("adlg").close();logout();};
+
+  // Vorschlag eintragen
+  const dlg=$("dlg");
+  function openForm(){if(needLogin(openForm))return;$("form").reset();$("ferr").hidden=true;dlg.showModal();$("i-url").focus();}
+  $("addbtn").onclick=openForm; $("addbtn2").onclick=openForm;
+  $("cancel").onclick=()=>dlg.close();
+  $("form").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const url=safeUrl($("i-url").value.trim()), title=$("i-title").value.trim(), err=$("ferr");
+    if(!url){err.textContent="Füge einen Link ein, der mit https:// beginnt.";err.hidden=false;return;}
+    if(!title){err.textContent="Gib der Unterkunft einen kurzen Namen.";err.hidden=false;return;}
+    const doc={url,title,place:$("i-place").value.trim(),country:$("i-country").value,
+      price:Math.max(0,Number($("i-price").value)||0),beds:Math.max(0,parseInt($("i-beds").value)||0),
+      travel:$("i-travel").value,note:$("i-note").value.trim(),
+      bedCount:Math.max(0,parseInt($("i-bedcount").value)||0),image:safeUrl($("i-image").value.trim())||""};
+    $("save").disabled=true;$("save").textContent="Bild wird geholt …";
+    try{await write("addIdea",doc);dlg.close();filter="Alle";render();}
+    catch(ex){if(ex.code!=="auth"){err.textContent="Das hat nicht geklappt. Versuch es noch einmal.";err.hidden=false;}else dlg.close();}
+    finally{$("save").disabled=false;$("save").textContent="Vorschlagen";}
+  });
+
+  render();
+  if(API.indexOf("/exec")<0){loaded=true;render();notice("Die Seite ist noch nicht mit dem Google Sheet verbunden. Trag oben im Code die Adresse deines Scripts ein.");return;}
+  call("getState").then(apply).catch(()=>{loaded=true;render();notice("Die Liste konnte nicht geladen werden. Lade die Seite neu.");});
+})();
+</script>
+</body>
+</html>
